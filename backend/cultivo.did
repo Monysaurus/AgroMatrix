@@ -1,0 +1,28 @@
+type FechasClave = record {
+  siembra: text;
+  floracion: opt text;
+  cosecha: opt text;
+};
+
+type Cultivo = record {
+  id: nat;
+  nombre: text;
+  variedad: text;
+  fechaSiembra: text;
+  ubicacion: text;
+  etapaDesarrollo: text;
+  alturaPromedio: text;
+  sintomasVisibles: text;
+  plagas: opt text;
+  productoAplicado: opt text;
+  fertilizante: opt text;
+  fechasClave: FechasClave;
+};
+
+service : {
+  addCultivo: (Cultivo) -> (nat);
+  getCultivo: (nat) -> (opt Cultivo);
+  listCultivos: () -> (vec Cultivo);
+  updateCultivo: (Cultivo) -> (bool);
+  deleteCultivo: (nat) -> (bool);
+}
