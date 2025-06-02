@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AgroMatrix</title>
+</head>
+<body>
+  <h1>Registro de Cultivo</h1>
+  <form id="cultivoForm">
+    <input type="text" placeholder="Nombre" id="nombre" required><br>
+    <input type="text" placeholder="Variedad" id="variedad"><br>
+    <input type="date" placeholder="Fecha de Siembra" id="fechaSiembra"><br>
+    <input type="text" placeholder="Ubicación" id="ubicacion"><br>
+    <input type="text" placeholder="Etapa Desarrollo" id="etapaDesarrollo"><br>
+    <input type="text" placeholder="Altura Promedio" id="alturaPromedio"><br>
+    <input type="text" placeholder="Síntomas Visibles" id="sintomasVisibles"><br>
+    <input type="text" placeholder="Plagas (opcional)" id="plagas"><br>
+    <input type="text" placeholder="Producto Aplicado (opcional)" id="producto"><br>
+    <input type="text" placeholder="Fertilizante (opcional)" id="fertilizante"><br>
+    <input type="date" placeholder="Floración (opcional)" id="floracion"><br>
+    <input type="date" placeholder="Cosecha (opcional)" id="cosecha"><br>
+    <button type="submit">Registrar</button>
+  </form>
+
+  <h2>Lista de Cultivos</h2>
+  <ul id="listaCultivos"></ul>
+
+  <script type="module">
+    import { createActor, canisterId } from "declarations/backend";
+    const cultivoCanister = createActor(canisterId);
+
+    const form = document.getElementById("cultivoForm");
+    const lista = document.getElementById("listaCultivos");
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const cultivo = {
+        id: 0,
+        nombre: nombre.value,
+        variedad: variedad.value,
+        fechaSiembra: fechaSiembra.value,
+        ubicacion: ubicacion.value,
+        etapaDesarrollo: etapaDesarrollo.value,
+        alturaPromedio: alturaPromedio.value,
+        sintomasVisibles: sintomasVisibles.value,
+        plagas: plagas.value || [],
+        productoAplicado: producto.value || [],
+        fertilizante: fertilizante.value || [],
+        fechasClave: {
+          siembra: fechaSiembra.value,
+          floracion: floracion.value || [],
+          cosecha: cosecha.value || []
+        }
+      };
+      await cultivoCanister.addCultivo(cultivo);
+      form.reset();
+      loadCultivos();
+    };
+
+    async function loadCultivos() {
+      lista.innerHTML = "";
+      const cultivos = await cultivoCanister.listCultivos();
+      cultivos.forEach(c => {
+        const li = document.createElement("li");
+        li.textContent = `${c.nombre} (${c.fechaSiembra}) - ${c.ubicacion}`;
+        lista.appendChild(li);
+      });
+    }
+
+    loadCultivos();
+  </script>
+</body>
+</html>
